@@ -37,4 +37,4 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Deployed URL
 
-[https://website-classifier.vercel.app](https://website-classifier.vercel.app)
+[https://website-classifier-g1barauo7.vercel.app](https://website-classifier-g1barauo7.vercel.app)
