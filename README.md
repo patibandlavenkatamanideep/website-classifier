@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Website Classifier
 
-## Getting Started
+A small Next.js app that takes any URL, scrapes the page using Firecrawl, and asks Claude Haiku to classify it into one of four categories: **Ecommerce**, **Social / UGC**, **News / Media**, or **Other**. Results include a confidence score, a brief reasoning statement, and are cached in-memory for one hour so repeated lookups are instant.
 
-First, run the development server:
+## Setup
+
+```bash
+npm install
+```
+
+Copy `.env.example` to `.env.local` and fill in your API keys:
+
+```bash
+cp .env.example .env.local
+```
+
+```
+OPENAI_API_KEY=your_openai_api_key
+FIRECRAWL_API_KEY=your_firecrawl_api_key
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Implementation notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Why gpt-4o-mini?** The classification task is straightforward — four categories, clear signals, short output. `gpt-4o-mini` is fast and inexpensive for this use case, and the quality is indistinguishable from a larger model here.
 
-## Learn More
+**Why an in-memory `Map` cache instead of Redis?** This is a single-instance demo app and the brief explicitly rules out a database. A `Map` with a TTL check is ~15 lines and zero infrastructure. For a multi-instance production deployment, swap in Vercel KV or another distributed cache.
 
-To learn more about Next.js, take a look at the following resources:
+**Why Firecrawl over raw `fetch`?** Firecrawl handles JavaScript-rendered pages and returns clean markdown, which gives the LLM a much better signal than raw HTML. A naive `fetch` would fail on most modern SPAs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Known limitations:** Pages that require authentication or aggressively block bots will fail to scrape. The four-category taxonomy is intentionally coarse. LLM confidence scores are not truly calibrated probabilities — treat them as relative signals, not absolutes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployed URL
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[https://website-classifier.vercel.app](https://website-classifier.vercel.app)
