@@ -1,6 +1,6 @@
 # Website Classifier
 
-A small Next.js app that takes any URL, scrapes the page using Firecrawl, and asks Claude Haiku to classify it into one of four categories: **Ecommerce**, **Social / UGC**, **News / Media**, or **Other**. Results include a confidence score, a brief reasoning statement, and are cached in-memory for one hour so repeated lookups are instant.
+A small Next.js app that takes any URL, scrapes the page using Firecrawl, and asks GPT-4o mini to classify it into one of four categories: **Ecommerce**, **Social / UGC**, **News / Media**, or **Other**. Results include a confidence score, a brief reasoning statement, and are cached in-memory for one hour so repeated lookups are instant.
 
 ## Setup
 
@@ -27,7 +27,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Implementation notes
 
-**Why gpt-4o-mini?** The classification task is straightforward — four categories, clear signals, short output. `gpt-4o-mini` is fast and inexpensive for this use case, and the quality is indistinguishable from a larger model here.
+**Why gpt-4o-mini?** Fast, cheap, and the task is simple classification — four categories, clear signals, short output. A larger model adds cost with no meaningful quality gain here.
 
 **Why an in-memory `Map` cache instead of Redis?** This is a single-instance demo app and the brief explicitly rules out a database. A `Map` with a TTL check is ~15 lines and zero infrastructure. For a multi-instance production deployment, swap in Vercel KV or another distributed cache.
 
