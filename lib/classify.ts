@@ -38,10 +38,16 @@ export async function classify(url: string): Promise<ClassifyResult> {
   if (cached) return { ...cached, cached: true };
 
   const firecrawl = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY! });
-  const doc = await firecrawl.scrape(url, { formats: ["markdown"] });
+
+  let doc;
+  try {
+    doc = await firecrawl.scrape(url, { formats: ["markdown"] });
+  } catch {
+    throw new Error("This site can't be scraped — it may block automated access or require a subscription.");
+  }
 
   if (!doc.markdown) {
-    throw new Error("Failed to scrape page");
+    throw new Error("This site can't be scraped — it may block automated access or require a subscription.");
   }
 
   const content = doc.markdown.slice(0, CONTENT_LIMIT);
